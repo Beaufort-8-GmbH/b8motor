@@ -1,0 +1,13 @@
+<f:switch expression="{messageType}">
+  <f:case value="send-mail-to-admin">
+    <html>
+      <head>
+        <title>{email-subject}</title>
+      </head>
+      <body>
+        <h2 style="color:{color}">{email-subject}</h2>
+        <p><f:format.nl2br>{email-bodytext}</f:format.nl2br></p>
+      </body>
+    </html>
+  </f:case>
+</f:switch>

@@ -1,0 +1,70 @@
+#settings:
+# <name>
+#   type:          <name>
+#   date-srcset:   true                                              | ~
+#   lazyload:      class="lazyload"                                  | ~
+#   plugin:        <plugin name> e.g. tx_b8news_domain_model_news    | ~
+#   path:          <image path> e.g. news                            | ~
+#   art-direction: true                                              | ~
+#   style:
+#     - name
+#     - sizes
+#     - max-width
+#          -1: max-width of biggest image
+#           ~: definition in sizes
+#     - media
+#           ~: not set
+#     - to
+#          -1: max-width of biggest image
+#     - from
+#           ~: not set
+#     - last
+#        true: this block is the last art direction element <img srcset="...">
+
+smartImageSettings:
+  HeroImage:
+    type: Hero Image
+    data-srcset: ~
+    lazyload: ~
+    plugin: ~
+    path: ~
+    art-direction: true
+    style:
+      -
+        name: Desktop
+        sizes: "(min-width: 854px) 100vw, 100vw"
+        max-width: ~
+        media: ~
+        to: -1
+        from: 854
+        last: true
+      -
+        name: Mobile
+        sizes: "(max-width: 853px) 100vw, 100vw"
+        max-width: ~
+        media: "(max-width: 853px)"
+        to: 853
+        from: 200
+        last: false
+
+
+  TextImage:
+    type: Text Image
+    data-srcset: ~
+    lazyload: ~
+    plugin: ~
+    path: ~
+    art-direction: ~
+    style:
+      -
+        name: Default
+        sizes: "(max-width: 960px) 100vw, (min-width: 961px) and (max-width: 2270px) 50vw, (min-width: 2271px) 1120px, 1600px"
+        max-width: ~
+        media: ~
+        to: 1600
+        from: ~
+        last: true
+
+
+
+

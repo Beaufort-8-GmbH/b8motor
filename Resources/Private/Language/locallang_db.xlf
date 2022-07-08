@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2020-03-30T15:17:19+02:00" product-name="b8components">
+    <header/>
+    <body>
+      <trans-unit id="tt_content.tx_b8components_input1" xml:space="preserve">
+        <source>Button Text</source>
+      </trans-unit>
+      <trans-unit id="tt_content.tx_b8components_teaserimage" xml:space="preserve">
+        <source>Teaser Image</source>
+      </trans-unit>
+      <trans-unit id="tt_content.tx_b8components_teaserimagegroupstyle" xml:space="preserve">
+        <source>Style (only 1 Col)</source>
+      </trans-unit>
+      <trans-unit id="tt_content.tx_b8components_teaserimagegroupstyle.I.0" xml:space="preserve">
+        <source>1 Col Default</source>
+      </trans-unit>
+      <trans-unit id="tt_content.tx_b8components_teaserimagegroupstyle.I.1" xml:space="preserve">
+        <source>1 Col Reversed</source>
+      </trans-unit>
+      <trans-unit id="tt_content.CType.div._b8components_" xml:space="preserve">
+        <source>b8components</source>
+      </trans-unit>
+      <trans-unit id="tt_content.CType.b8components_teaserimage" xml:space="preserve">
+        <source>Teaser Image [Component]</source>
+      </trans-unit>
+      <trans-unit id="tt_content.CType.b8components_teaserimagegroup" xml:space="preserve">
+        <source>Teaser Image Group [Module]</source>
+      </trans-unit>
+      <trans-unit id="tt_content.colPos.nestedContentColPos" xml:space="preserve">
+        <source>Nested content (b8components)</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

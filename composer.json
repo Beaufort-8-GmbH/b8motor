@@ -1,0 +1,33 @@
+{
+    "name": "b8/b8motor",
+    "type": "typo3-cms-extension",
+    "description": "",
+    "authors": [
+        {
+            "name": "Feng Lu",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^9.5 || ^10.4 || ^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "B8\\B8motor\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "B8\\B8motor\\Tests\\": "Tests"
+        }
+    },
+    "replace": {
+        "b8/b8motor": "self.version",
+        "typo3-ter/b8motor": "self.version"
+    },
+    "extra": {
+		"typo3/cms": {
+			"extension-key": "b8motor"
+		}
+	}
+}

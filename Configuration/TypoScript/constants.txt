@@ -1,0 +1,16 @@
+
+plugin.tx_b8motor {
+	view {
+		# cat=plugin.tx_b8motor/file; type=string; label=Path to template root (FE)
+		templateRootPath = EXT:b8motor/Resources/Private/Templates/
+		# cat=plugin.tx_b8motor/file; type=string; label=Path to template partials (FE)
+		partialRootPath = EXT:b8motor/Resources/Private/Partials/
+		# cat=plugin.tx_b8motor/file; type=string; label=Path to template layouts (FE)
+		layoutRootPath = EXT:b8motor/Resources/Private/Layouts/
+	}
+	persistence {
+		# cat=plugin.tx_b8motor//a; type=string; label=Default storage PID
+		storagePid =
+	}
+}
+

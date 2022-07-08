@@ -1,0 +1,14 @@
+MethodesMapping:
+    action:
+        'b89cee8ba22b59dff634ed7befc9eebe': 'DemoHandler'
+    extension:
+        'abcfbcbec0c54f8df45b42241929f211': 'MyExtension'
+    vendor:
+        'f7920e18fde19b43dcd3b0279572b049': 'MyVendor'
+
+    name:
+        'action': '8bd07458ff77b6c8e2bc8912c6604890'
+        'ext': 'b9029fa64532cfa6e5672af4f4f86a21'
+        'param': 'd1e1f3f8a64abdf99cc7ebf220ea2f67'
+        'vendor': '7132ace821e4d04e187d84428424f9cf'
+

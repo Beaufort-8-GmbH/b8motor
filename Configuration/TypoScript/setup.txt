@@ -1,0 +1,16 @@
+plugin.tx_b8motor {
+	view {
+		templateRootPath = {$plugin.tx_b8motor.view.templateRootPath}
+		partialRootPath = {$plugin.tx_b8motor.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_b8motor.view.layoutRootPath}
+	}
+	persistence {
+		storagePid = {$plugin.tx_b8motor.persistence.storagePid}
+	}
+    features {
+        skipDefaultArguments = 0
+    }
+}
+
+
+
