@@ -27,12 +27,12 @@
     // plugin signature: <extension name without underscores> '_' <plugin name in lowercase>
     $pluginsignatur = 'b8motor_basic';
 
-    $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginsignatur] = 'pi_flexform';
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
-        $pluginsignatur,
-        // Flexform configuration schema file
-        'FILE:EXT:b8motor/Configuration/FlexForms/Registration.xml'
-    );
+    // $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginsignatur] = 'pi_flexform';
+    // \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
+    //     $pluginsignatur,
+    //     // Flexform configuration schema file
+    //     'FILE:EXT:b8motor/Configuration/FlexForms/Registration.xml'
+    // );
 
 
 
