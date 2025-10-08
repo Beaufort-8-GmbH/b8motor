@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This file is part of the "B8 Motor" Extension for TYPO3 CMS.
@@ -22,7 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-defined('TYPO3_MODE') or die();
 
 (function () {
     // plugin signature: <extension name without underscores> '_' <plugin name in lowercase>
@@ -46,8 +45,16 @@ defined('TYPO3_MODE') or die();
                 'type'       => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Yes', 0],
-                    ['No',  1],
+                    // ['Yes', 0],
+                    // ['No',  1],
+                    [
+                        'label' => 'Yes',
+                        'value' => 0,
+                    ],
+                    [
+                        'label' => 'No',
+                        'value' => 1,
+                    ],
                 ],
                 'size'     => 1,
                 'maxitems' => 1,

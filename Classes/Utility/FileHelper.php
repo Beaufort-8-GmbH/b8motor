@@ -4,11 +4,12 @@ declare(strict_types = 1);
 namespace B8\B8motor\Utility;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2023 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -91,22 +92,33 @@ class FileHelper
     /**
      * get all subpage ids from parent pages
      *
-     * @param   string  $_parentIds  parent page IDs
+     * Note:
+     * - QueryGenerator::getTreeList() is deprecated/removed in TYPO3 v12.
+     * - Use PageRepository->getDescendantPageIdsRecursive() to fetch subpage IDs (excluding the start page),
+     *   then convert the resulting int[] to a comma-separated string to keep the original return type.
+     *
+     * @param   string  $_parentIds  parent page IDs (comma-separated)
      * @param   int     $_deep       depth
      *
-     * @return  string               subpage ids
+     * @return  string               subpage ids (comma-separated)
      */
     public static function getSubPids(string $_parentIds, int $_deep = 1000): string
     {
         $_parentIds = explode(',', $_parentIds);
 
         $pids = '';
-        $queryGenerator = GeneralUtility::makeInstance(TYPO3\CMS\Core\Database\QueryGenerator::class);
+        // Replace deprecated QueryGenerator->getTreeList() with PageRepository recursion
+        $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
 
         foreach ($_parentIds as $id) {
-            $ids = $queryGenerator->getTreeList($id, $_deep, 0, 1);
-            if ($ids !== '') {
-                $pids .= $ids.',';
+            $id = (int)$id;
+            if ($id <= 0) {
+                continue;
+            }
+            // Get descendant page IDs (excluding the start page) and convert to CSV
+            $descendants = $pageRepository->getDescendantPageIdsRecursive($id, $_deep);
+            if (!empty($descendants)) {
+                $pids .= implode(',', $descendants) . ',';
             }
         }
         if (substr($pids, -1) === ',') {

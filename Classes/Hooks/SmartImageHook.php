@@ -12,13 +12,13 @@ use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use B8\B8motor\Utility\ImageHelper;
 use B8\B8motor\Utility\FileHelper;
-
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -135,48 +135,50 @@ class SmartImageHook
      */
     public function processCmdmap_deleteAction(string $table, int $id, array $recordToDelete, bool $recordWasDeleted=NULL, \TYPO3\CMS\Core\DataHandling\DataHandler &$pObj): void
     {
-        $pluginImagePath = !empty($this->allowed[$recordToDelete['tablenames']]) ? $this->allowed[$recordToDelete['tablenames']] . '/' : '';
-        // var_dump($pluginImagePath);
+        if (isset($recordToDelete['tablenames'])) {
+            $pluginImagePath = !empty($this->allowed[$recordToDelete['tablenames']]) ? $this->allowed[$recordToDelete['tablenames']] . '/' : '';
+            // var_dump($pluginImagePath);
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_b8motor_breakpoint_images');
-        $queryBuilder
-            ->update('tx_b8motor_breakpoint_images')
-            ->where(
-                $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
-            )
-            ->set('deleted', 1)
-            ->execute();
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_b8motor_breakpoint_images');
+            $queryBuilder
+                ->update('tx_b8motor_breakpoint_images')
+                ->where(
+                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
+                )
+                ->set('deleted', 1)
+                ->execute();
 
-        // get file names
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_b8motor_breakpoint_images');
-        $statement = $queryBuilder
-            ->select('file')
-            ->from('tx_b8motor_breakpoint_images')
-            ->where(
-                $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
-            )
-            ->execute();
+            // get file names
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_b8motor_breakpoint_images');
+            $statement = $queryBuilder
+                ->select('file')
+                ->from('tx_b8motor_breakpoint_images')
+                ->where(
+                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
+                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
+                )
+                ->execute();
 
-        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-        $messageQueue        = $flashMessageService->getMessageQueueByIdentifier();
+            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+            $messageQueue        = $flashMessageService->getMessageQueueByIdentifier();
 
-        while ($r = $statement->fetch()) {
-            $title = 'Smart Image';
+            while ($r = $statement->fetch()) {
+                $title = 'Smart Image';
 
-            $file  = Environment::getPublicPath() . self::IMAGE_FILE_PATH . $pluginImagePath . $recordToDelete['uid_foreign'] . '/' . $r['file'];
+                $file  = Environment::getPublicPath() . self::IMAGE_FILE_PATH . $pluginImagePath . $recordToDelete['uid_foreign'] . '/' . $r['file'];
 
-            if (!FileHelper::removeFile($file)) {
-                $severity = FlashMessage::WARNING;
-                $prompt   = $file . ' can\'t remove.';
-            } else {
-                $severity = FlashMessage::OK;
-                $prompt   = $file . ' removed.';
+                if (!FileHelper::removeFile($file)) {
+                    $severity = ContextualFeedbackSeverity::WARNING;
+                    $prompt   = $file . ' can\'t remove.';
+                } else {
+                    $severity = ContextualFeedbackSeverity::OK;
+                    $prompt   = $file . ' removed.';
+                }
+                $message = GeneralUtility::makeInstance(FlashMessage::class, $prompt, $title, $severity, false); // NOTICE, INFO, OK, WARNING, ERROR
+
+                $messageQueue->enqueue($message);
             }
-            $message = GeneralUtility::makeInstance(FlashMessage::class, $prompt, $title, $severity, false); // NOTICE, INFO, OK, WARNING, ERROR
-
-            $messageQueue->enqueue($message);
         }
     }
 
@@ -212,10 +214,10 @@ class SmartImageHook
                 $title = 'Smart Image';
 
                 if ($rows > 0) {
-                    $severity = FlashMessage::OK;
+                    $severity = ContextualFeedbackSeverity::OK;
                     $prompt   = 'Images saved.';
                 } else {
-                    $severity = FlashMessage::ERROR;
+                    $severity = ContextualFeedbackSeverity::ERROR;
                     $prompt   = 'Images would not saved.';
                 }
                 $message  = GeneralUtility::makeInstance(FlashMessage::class, $prompt, $title, $severity, false); // NOTICE, INFO, OK, WARNING, ERROR

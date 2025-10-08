@@ -15,7 +15,7 @@ use TYPO3\CMS\Core\Mail\MailMessage;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018-2020 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -150,8 +150,8 @@ class SmartImageHealthCheck extends \TYPO3\CMS\Scheduler\Task\AbstractTask
                 $color   = 'red';
             }
 
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $message       = $objectManager->get(StandaloneView::class);
+            // Instantiate StandaloneView via GeneralUtility (ObjectManager removed in TYPO3 v12)
+            $message = GeneralUtility::makeInstance(StandaloneView::class);
 
             $message->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName(self::MAIL_TEMPLATE));
 

@@ -8,7 +8,7 @@ use B8\B8motor\Service\SmartImageService;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018-2020 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,17 +31,23 @@ use B8\B8motor\Service\SmartImageService;
 class SmartImageViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
 
+    /**
+     * Render smart image HTML for the current content element.
+     *
+     * Creates required instances via GeneralUtility::makeInstance to be compatible with TYPO3 v12+,
+     * and returns the generated image markup without changing existing logic.
+     *
+     * @return string Rendered HTML for the smart image.
+     */
     public function render(): string
     {
         $data = $this->templateVariableContainer->get('data');
 
         $cid = empty($data['_LOCALIZED_UID']) ? (int)$data['uid'] : (int)$data['_LOCALIZED_UID']; // content id
 
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-
-        $smartImageService    = $objectManager->get(SmartImageService::class);
-        $smartImageController = $objectManager->get(\B8\B8motor\Controller\SmartImageController::class, $smartImageService);
-
+        // Instantiate service and controller via GeneralUtility (ObjectManager removed in TYPO3 v12)
+        $smartImageService    = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SmartImageService::class);
+        $smartImageController = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\B8\B8motor\Controller\SmartImageController::class, $smartImageService);
 
         return $smartImageController->renderImage($cid, 'tt_content', '');
     }

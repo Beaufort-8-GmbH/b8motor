@@ -14,7 +14,7 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2020 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2020 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -108,7 +108,7 @@ class SmartImageService implements SmartImageInterface
                 $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT))
             )
             ->execute()
-            ->fetchColumn(0);
+            ->fetchOne();
 
         if ($count > 1) {
             $this->isArtDirection = true;
@@ -218,7 +218,7 @@ class SmartImageService implements SmartImageInterface
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT))
             )
             ->execute()
-            ->fetchColumn(0);
+            ->fetchOne();
     }
 
     /**
@@ -322,7 +322,7 @@ class SmartImageService implements SmartImageInterface
                                 break;
                             }
                         }
-                        if (!is_null($this->images[$i]['extension']) && !in_array(strtolower($this->images[$i]['extension']), self::ALLOWED_FILE_EXT)) {
+                        if (isset($this->images[$i]['extension']) && !is_null($this->images[$i]['extension']) && !in_array(strtolower($this->images[$i]['extension']), self::ALLOWED_FILE_EXT)) {
                             $html .= '" src="/fileadmin'.$this->images[$i]['identifier'].'" '.$lazyload.' alt="'.(!is_null($this->images[0]['alternative'])?$this->images[0]['alternative']:$this->images[0]['name']).'" title="'.$this->images[0]['title'].'"></picture>';
                         } else {
                             $html .= '" src="/fileadmin/breakpoints/'.($this->path!==''?$this->path.'/':'').$this->cid.'/'.$this->images[floor($amount/2)]['file'].'" alt="'.(!is_null($this->images[0]['alternative'])?$this->images[0]['alternative']:$this->images[0]['name']).'" title="'.$this->images[0]['title'].'" '.($lazyload===''? 'loading="lazy"' : '').'></picture>';

@@ -8,11 +8,12 @@ use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2020 Feng Lu <lu@beaufort8.de>
+ *  (c) 2020 - 2025 Feng Lu <lu@beaufort8.de>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -149,7 +150,7 @@ class FlexformUserFunc
         } else {
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $messageQueue        = $flashMessageService->getMessageQueueByIdentifier();
-            $severity            = FlashMessage::ERROR;
+            $severity            = ContextualFeedbackSeverity::ERROR;
             $prompt              = 'Configration file "' . $file .'" is missing.';
             $title               = 'Load SmartImage Configuration';
             $message             = GeneralUtility::makeInstance(FlashMessage::class, $prompt, $title, $severity, false); // NOTICE, INFO, OK, WARNING, ERROR
