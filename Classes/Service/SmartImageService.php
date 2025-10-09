@@ -105,9 +105,9 @@ class SmartImageService implements SmartImageInterface
             ->where(
                 $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter('image')),
                 $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($this->tablenames)),
-                $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($this->cid, \Doctrine\DBAL\ParameterType::INTEGER))
             )
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
 
         if ($count > 1) {
@@ -129,7 +129,7 @@ class SmartImageService implements SmartImageInterface
         $constraints = [
             $queryBuilder->expr()->eq('sys_file_reference.fieldname', $queryBuilder->createNamedParameter('image')),
             $queryBuilder->expr()->eq('sys_file_reference.tablenames', $queryBuilder->createNamedParameter($this->tablenames)),
-            $queryBuilder->expr()->eq('sys_file_reference.uid_foreign', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT)),
+            $queryBuilder->expr()->eq('sys_file_reference.uid_foreign', $queryBuilder->createNamedParameter($this->cid, \Doctrine\DBAL\ParameterType::INTEGER)),
         ];
 
         $originalImage = $queryBuilder
@@ -142,9 +142,9 @@ class SmartImageService implements SmartImageInterface
                 $queryBuilder->expr()->eq('sys_file_reference.uid_local', $queryBuilder->quoteIdentifier('sys_file.uid'))
             )
             ->where(...$constraints)
-            ->execute();
+            ->executeQuery();
 
-        while ($image = $originalImage->fetch()) {
+        while ($image = $originalImage->fetchAssociative()) {
             // tx_b8motor_as_responsive:
             //      0 => responsive, pictures from folder "fileadmin/breakpoints"
             //      1 => not responsive, has only 1 picture
@@ -154,13 +154,13 @@ class SmartImageService implements SmartImageInterface
                     ->select('uid', 'file', 'width', 'height')
                     ->from('tx_b8motor_breakpoint_images')
                     ->where(
-                        $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT)),
-                        $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($image['suid'], \PDO::PARAM_INT))
+                        $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter($this->cid, \Doctrine\DBAL\ParameterType::INTEGER)),
+                        $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($image['suid'], \Doctrine\DBAL\ParameterType::INTEGER))
                     )
                     ->orderBy('width', 'ASC')
-                    ->execute();
+                    ->executeQuery();
 
-                while ($fileinfo = $fileInfos->fetch()) {
+                while ($fileinfo = $fileInfos->fetchAssociative()) {
                     $image['file']   = $fileinfo['file'];
                     $image['width']  = $fileinfo['width'];
                     $image['height'] = $fileinfo['height'];
@@ -174,11 +174,11 @@ class SmartImageService implements SmartImageInterface
                     ->select('*')
                     ->from('sys_file_metadata')
                     ->where(
-                        $queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($image['uid'], \PDO::PARAM_INT))
+                        $queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($image['uid'], \Doctrine\DBAL\ParameterType::INTEGER))
                     )
-                    ->execute();
+                    ->executeQuery();
 
-                while ($fileinfo = $fileInfos->fetch()) {
+                while ($fileinfo = $fileInfos->fetchAssociative()) {
                     $image['width']  = $fileinfo['width'];
                     $image['height'] = $fileinfo['height'];
 
@@ -215,9 +215,9 @@ class SmartImageService implements SmartImageInterface
             ->select('t3_origuid')
             ->from('tt_content')
             ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->cid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->cid, \Doctrine\DBAL\ParameterType::INTEGER))
             )
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
     }
 

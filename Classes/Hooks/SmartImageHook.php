@@ -143,11 +143,11 @@ class SmartImageHook
             $queryBuilder
                 ->update('tx_b8motor_breakpoint_images')
                 ->where(
-                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
+                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \Doctrine\DBAL\ParameterType::INTEGER)),
+                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \Doctrine\DBAL\ParameterType::INTEGER))
                 )
                 ->set('deleted', 1)
-                ->execute();
+                ->executeStatement();
 
             // get file names
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_b8motor_breakpoint_images');
@@ -155,15 +155,15 @@ class SmartImageHook
                 ->select('file')
                 ->from('tx_b8motor_breakpoint_images')
                 ->where(
-                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
-                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \PDO::PARAM_INT))
+                    $queryBuilder->expr()->eq('img_id', $queryBuilder->createNamedParameter($id, \Doctrine\DBAL\ParameterType::INTEGER)),
+                    $queryBuilder->expr()->eq('cid', $queryBuilder->createNamedParameter((int)$recordToDelete['uid_foreign'], \Doctrine\DBAL\ParameterType::INTEGER))
                 )
-                ->execute();
+                ->executeQuery();
 
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $messageQueue        = $flashMessageService->getMessageQueueByIdentifier();
 
-            while ($r = $statement->fetch()) {
+            while ($r = $statement->fetchAssociative()) {
                 $title = 'Smart Image';
 
                 $file  = Environment::getPublicPath() . self::IMAGE_FILE_PATH . $pluginImagePath . $recordToDelete['uid_foreign'] . '/' . $r['file'];
@@ -251,9 +251,9 @@ class SmartImageHook
 
         $constraints = [
             $queryBuilder->expr()->eq('sys_file_reference.tablenames', $queryBuilder->createNamedParameter($table)),
-            $queryBuilder->expr()->eq('sys_file_reference.uid', $queryBuilder->createNamedParameter($id, \PDO::PARAM_INT)),
-            $queryBuilder->expr()->eq('sys_file_reference.deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-            $queryBuilder->expr()->eq('sys_file_reference.hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+            $queryBuilder->expr()->eq('sys_file_reference.uid', $queryBuilder->createNamedParameter($id, \Doctrine\DBAL\ParameterType::INTEGER)),
+            $queryBuilder->expr()->eq('sys_file_reference.deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+            $queryBuilder->expr()->eq('sys_file_reference.hidden', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
         ];
 
         $info = $queryBuilder
@@ -278,8 +278,8 @@ class SmartImageHook
                 $queryBuilder->expr()->eq($table . '.uid', $queryBuilder->quoteIdentifier('sys_file_reference.uid_foreign'))
             )
             ->where(...$constraints)
-            ->execute()
-            ->fetch();
+            ->executeQuery()
+            ->fetchAssociative();
 
         // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($queryBuilder->getParameters(), $queryBuilder->getSql());
 

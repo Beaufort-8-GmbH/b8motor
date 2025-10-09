@@ -25,6 +25,11 @@
 
 
 (function () {
+    /**
+     * Configure Extbase plugin 'Basic' for extension 'B8motor' as a dedicated CType.
+     * This adds the required fifth parameter ($pluginType) to avoid Deprecation #105076 in TYPO3 v13+,
+     * and ensures future compatibility with TYPO3 v14.
+     */
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
         'B8.B8motor',    // format: <vendor name>.<extension name>
         'Basic',         // format: <plugin name>
@@ -32,7 +37,8 @@
         ],
         // non-cacheable actions
         [
-        ]
+        ],
+        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
     /*
      * Plugin Icon

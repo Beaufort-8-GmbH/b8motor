@@ -4,7 +4,7 @@ declare(strict_types = 1);
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,9 +27,7 @@ declare(strict_types = 1);
 namespace B8\B8motor\ViewHelpers;
 
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * renders the header of the results page
@@ -37,7 +35,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
  */
 class PageBrowsingResultsOverrideViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
 
     /**
      * As this ViewHelper renders HTML, the output must not be escaped.
@@ -57,16 +54,20 @@ class PageBrowsingResultsOverrideViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @param array $arguments
-     * @param callable|\Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
+     * Render the header information for the indexed search results page.
+     *
+     * This replaces the deprecated renderStatic() approach with an instance-level
+     * render() method and uses $this->arguments to fetch ViewHelper arguments.
+     * The output remains identical: it calculates the result range and formats
+     * the label using LocalizationUtility::translate().
+     *
+     * @return string The localized and formatted header text for the current page
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public function render(): string
     {
-        $numberOfResults = $arguments['numberOfResults'];
-        $resultsPerPage = $arguments['resultsPerPage'];
-        $currentPage = $arguments['currentPage'];
+        $numberOfResults = $this->arguments['numberOfResults'];
+        $resultsPerPage = $this->arguments['resultsPerPage'];
+        $currentPage = $this->arguments['currentPage'];
 
         $firstResultOnPage = $currentPage * $resultsPerPage + 1;
         $lastResultOnPage = $currentPage * $resultsPerPage + $resultsPerPage;

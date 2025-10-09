@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Routing\Aspect\PersistenceDelegate;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2020 Feng Lu <lu@beaufort8.de>
+*  (c) 2020 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This file is part of the "B8 Motor" Extension for TYPO3 CMS.
@@ -74,8 +74,11 @@ class PersistedAliasMapper extends \TYPO3\CMS\Core\Routing\Aspect\PersistedAlias
 
 
     /**
-     * @return array or null
-     * Workes since Typo3 9.5.14
+     * Find a record by its numeric identifier (uid).
+     * DBAL 3 migration: Use executeQuery() and Doctrine ParameterType for integers.
+     *
+     * @param string $value Identifier value
+     * @return array|null   Associative row or null if not found
      */
     protected function findByIdentifier(string $value): ?array
     {
@@ -91,17 +94,20 @@ class PersistedAliasMapper extends \TYPO3\CMS\Core\Routing\Aspect\PersistedAlias
             ->select(...$this->persistenceFieldNames)
             ->where($queryBuilder->expr()->eq(
                 'uid',
-                $queryBuilder->createNamedParameter($value, \PDO::PARAM_INT)
+                $queryBuilder->createNamedParameter($value, \Doctrine\DBAL\ParameterType::INTEGER)
             ))
-            ->execute()
-            ->fetch();
+            ->executeQuery()
+            ->fetchAssociative();
         return $result !== false ? $result : null;
     }
 
 
     /**
-     * @return array or null
-     * Workes since Typo3 9.5.14
+     * Find a record by its route field string value.
+     * DBAL 3 migration: Use executeQuery() and ParameterType::STRING (no PDO constants).
+     *
+     * @param string $value Route field value
+     * @return array|null   Associative row or null if not found
      */
     protected function findByRouteFieldValue(string $value): ?array
     {
@@ -116,10 +122,10 @@ class PersistedAliasMapper extends \TYPO3\CMS\Core\Routing\Aspect\PersistedAlias
             ->select(...$this->persistenceFieldNames)
             ->where($queryBuilder->expr()->eq(
                 $this->routeFieldName,
-                $queryBuilder->createNamedParameter($value, \PDO::PARAM_STR)
+                $queryBuilder->createNamedParameter($value, \Doctrine\DBAL\ParameterType::STRING)
             ))
             ->execute()
-            ->fetch();
+            ->fetchAssociative();
         return $result !== false ? $result : null;
     }
 }

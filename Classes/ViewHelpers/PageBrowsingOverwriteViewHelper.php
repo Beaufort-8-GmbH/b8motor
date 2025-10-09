@@ -4,7 +4,7 @@ declare(strict_types = 1);
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2018 - 2022 Feng Lu <lu@beaufort8.de>
+*  (c) 2018 - 2025 Feng Lu <lu@beaufort8.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -30,8 +30,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 use \TYPO3\CMS\IndexedSearch\ViewHelpers\PageBrowsingViewHelper;
 
 /**
@@ -43,7 +41,6 @@ use \TYPO3\CMS\IndexedSearch\ViewHelpers\PageBrowsingViewHelper;
  */
 class PageBrowsingOverwriteViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
 
     /**
      * As this ViewHelper renders HTML, the output must not be escaped.
@@ -71,19 +68,22 @@ class PageBrowsingOverwriteViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
+     * Render the page browsing HTML for indexed search.
      *
-     * @return string
+     * This method replaces the deprecated renderStatic() approach (and the CompileWithRenderStatic trait)
+     * with the instance-level render() method, using $this->arguments to access ViewHelper arguments.
+     * The output logic stays unchanged: it builds previous/next buttons and page links,
+     * and returns an HTML <ul> list or an empty string depending on the result set.
+     *
+     * @return string The rendered HTML for the page browsing or empty string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public function render()
     {
-        $maximumNumberOfResultPages = $arguments['maximumNumberOfResultPages'];
-        $numberOfResults = $arguments['numberOfResults'];
-        $resultsPerPage = $arguments['resultsPerPage'];
-        $currentPage = $arguments['currentPage'];
-        $freeIndexUid = $arguments['freeIndexUid'];
+        $maximumNumberOfResultPages = $this->arguments['maximumNumberOfResultPages'];
+        $numberOfResults = $this->arguments['numberOfResults'];
+        $resultsPerPage = $this->arguments['resultsPerPage'];
+        $currentPage = $this->arguments['currentPage'];
+        $freeIndexUid = $this->arguments['freeIndexUid'];
 
         if ($resultsPerPage <= 0) {
             $resultsPerPage = 10;

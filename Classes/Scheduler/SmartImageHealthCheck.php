@@ -8,8 +8,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\MailUtility;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\Mail\MailMessage;
 
 /***************************************************************
@@ -94,11 +94,11 @@ class SmartImageHealthCheck extends \TYPO3\CMS\Scheduler\Task\AbstractTask
                 $queryBuilder->expr()->eq('tt_content.uid', $queryBuilder->quoteIdentifier('tx_b8motor_breakpoint_images.cid')),
             )
             ->where(
-                $queryBuilder->expr()->eq('tx_b8motor_breakpoint_images.deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('tx_b8motor_breakpoint_images.deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER))
             )
-            ->execute();
+            ->executeQuery();
 
-        while ($image = $images->fetch()) {
+        while ($image = $images->fetchAssociative()) {
             $this->images[] = $image;
         }
 
@@ -137,6 +137,18 @@ class SmartImageHealthCheck extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         return $mailContent;
     }
 
+    /**
+     * Send the Smart Image Health Check report via email.
+     *
+     * This method creates a Fluid view using TYPO3's generic ViewFactoryInterface instead of the deprecated StandaloneView.
+     * The template root path is derived from the MAIL_TEMPLATE constant, and variables are assigned via assignMultiple.
+     * It then renders the template into HTML and sends the mail using TYPO3's MailMessage.
+     *
+     * @param string $mailContent The content to include in the email body
+     * @param mixed $from From address (array or string) resolved by MailUtility::getSystemFrom()
+     * @param mixed $to   Recipient(s) (array or string)
+     * @return bool       True if the mail was sent successfully, otherwise false
+     */
     protected function sendMessage(string $mailContent, $from, $to): bool
     {
         if (!empty($this->images)) {
@@ -150,21 +162,39 @@ class SmartImageHealthCheck extends \TYPO3\CMS\Scheduler\Task\AbstractTask
                 $color   = 'red';
             }
 
-            // Instantiate StandaloneView via GeneralUtility (ObjectManager removed in TYPO3 v12)
-            $message = GeneralUtility::makeInstance(StandaloneView::class);
+            // Create Fluid view using the generic ViewFactoryInterface (replaces deprecated StandaloneView)
+            $viewFactory = GeneralUtility::makeInstance(ViewFactoryInterface::class);
 
-            $message->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName(self::MAIL_TEMPLATE));
+            // Derive template root path and template name from the constant MAIL_TEMPLATE
+            $absoluteTemplatePath = GeneralUtility::getFileAbsFileName(self::MAIL_TEMPLATE);
+            $templateRootPath     = \dirname($absoluteTemplatePath);
+            $templateName         = \basename($absoluteTemplatePath, '.html');
 
-            $message->assign('messageType',   'send-mail-to-admin');
-            $message->assign('email-subject',  $subject);
-            $message->assign('email-bodytext', $mailContent);
-            $message->assign('color',          $color);
-            $message->assign('email-eom',      '');
+            $viewFactoryData = new ViewFactoryData(
+                templateRootPaths: [$templateRootPath],
+                partialRootPaths: [$templateRootPath],
+                layoutRootPaths: [],
+                // In scheduler context there is no PSR-7 ServerRequest, omitting it is fine
+            );
+            $view = $viewFactory->create($viewFactoryData);
 
-            $mailBody = $message->render();
+            $view->assignMultiple([
+                'messageType'   => 'send-mail-to-admin',
+                'email-subject' => $subject,
+                'email-bodytext'=> $mailContent,
+                'color'         => $color,
+                'email-eom'     => '',
+            ]);
+
+            // Render without file extension, relative to templateRootPaths
+            $mailBody = $view->render($templateName);
 
             $mail = GeneralUtility::makeInstance(MailMessage::class);
-            $mail->setFrom($from)->setTo($to)->setCc($cc);
+            $mail->setFrom($from)->setTo($to);
+            // Avoid undefined $cc var: only set CC if defined externally
+            if (isset($cc) && !empty($cc)) {
+                $mail->setCc($cc);
+            }
             $mail->setSubject('Smart Image Health Check Report')->setBody($mailBody, 'text/html');
             $mail->send();
 

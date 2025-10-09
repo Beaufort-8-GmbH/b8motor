@@ -118,23 +118,6 @@
         '--linebreak--',
         'after:crop'
     );
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette(
-        'sys_file_reference',
-        'imageoverlayPalette',
-        'tx_b8motor_as_responsive'
-    );
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette(
-        'sys_file_reference',
-        'imageoverlayPalette',
-        'tx_b8motor_component_type',
-        'after:tx_b8motor_as_responsive'
-    );
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette(
-        'sys_file_reference',
-        'imageoverlayPalette',
-        'tx_b8motor_component_style',
-        'after:tx_b8motor_component_type'
-    );
 
     unset($newSystemFileReferenceElement);
     /* ============================ /sys_file_reference modify ============================ */
